@@ -1,8 +1,7 @@
 package com.magaita.appointment.entity;
 
 
-import com.magaita.appointment.enums.BloodGroup;
-import com.magaita.appointment.enums.Genotype;
+import com.magaita.appointment.enums.Specialization;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,12 +11,12 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(name="notifications")
+@Table(name="doctors")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Patient {
+public class Doctor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,26 +27,19 @@ public class Patient {
     @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "date_of_birth")
-    private String dateOfBirth;
-
-    private String phone;
-
-    @Column(name = "known_allergies")
-    @Lob //Store data as a comma seperated string
-    private String knownAllergies;
 
     @Enumerated(EnumType.STRING)
-    private BloodGroup bloodGroup;
+    private Specialization specialization;
 
-    @Enumerated(EnumType.STRING)
-    private Genotype genotype;
+    @Column(name = "license_number")
+    private String licenseNumber;
+
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",unique = true)
     private User user;
 
-    @OneToMany(mappedBy = "patient",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "doctor",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Appointment> appointments;
-
 }
+
