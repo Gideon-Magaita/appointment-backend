@@ -27,13 +27,11 @@ public class Doctor {
     @Column(name = "last_name")
     private String lastName;
 
-
     @Enumerated(EnumType.STRING)
     private Specialization specialization;
 
     @Column(name = "license_number")
     private String licenseNumber;
-
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",unique = true)
