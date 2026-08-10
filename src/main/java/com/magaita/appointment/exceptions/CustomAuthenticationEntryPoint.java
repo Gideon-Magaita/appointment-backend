@@ -25,8 +25,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
                          AuthenticationException authException)
             throws IOException, ServletException {
 
-        Response<?>responseResponse = Response.builder()
-                .statusCode(HttpStatus.UNAUTHORIZED.value())//invalid token
+        Response<?> responseResponse = Response.builder()
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
                 .message(authException.getMessage())
                 .build();
 
@@ -35,4 +35,5 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.getWriter().write(objectMapper.writeValueAsString(responseResponse));
 
     }
+
 }
