@@ -50,6 +50,7 @@ public class SecurityFilter {
 
     @Bean
     public PasswordEncoder passwordEncoder(){
+
         return new BCryptPasswordEncoder();
     }
     @Bean

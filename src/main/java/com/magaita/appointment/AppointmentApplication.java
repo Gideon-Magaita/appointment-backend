@@ -21,16 +21,16 @@ public class AppointmentApplication {
 
 		SpringApplication.run(AppointmentApplication.class, args);
 	}
-	@Bean
-	CommandLineRunner runner(){
-		return args -> {
-			NotificationDto notificationDto = NotificationDto.builder()
-					.recipient("gideonaugustino1998@gmail.com")
-					.subject("Testing mail")
-					.message("Hello this is a test mail from gideon")
-					.build();
-			notificationService.sendEmail(notificationDto,new User());
-		};
-	}
+//	@Bean
+//	CommandLineRunner runner(){
+//		return args -> {
+//			NotificationDto notificationDto = NotificationDto.builder()
+//					.recipient("gideonaugustino1998@gmail.com")
+//					.subject("Testing mail")
+//					.message("Hello this is a test mail from gideon")
+//					.build();
+//			notificationService.sendEmail(notificationDto,new User());
+//		};
+//	}
 
 }
