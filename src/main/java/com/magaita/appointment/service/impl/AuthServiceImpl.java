@@ -189,20 +189,48 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Response<?> updatePasswordViaResetCode(ResetPasswordRequest resetPasswordRequest) {
 
-        return null;
+        String code = resetPasswordRequest.getCode();
+        String newPassword = resetPasswordRequest.getNewPassword();
+
+        log.info("CODE IS: " + code);
+        log.info("NEW PASSWORD IS: " + newPassword);
+
+        // Find and validate code
+        PasswordResetCode resetCode = passwordResetRepo.findByCode(code)
+                .orElseThrow(() -> new BadRequestException("Invalid reset code"));
+
+
+        // Check expiration first
+        if (resetCode.getExpiryDate().isBefore(LocalDateTime.now())) {
+            passwordResetRepo.delete(resetCode); // Clean up expired code
+            throw new BadRequestException("Reset code has expired");
+        }
+
+        //update the password
+        User user = resetCode.getUser();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        // Delete the code immediately after successful use
+        passwordResetRepo.delete(resetCode);
+
+        // Send password confirmation email
+        NotificationDto passwordResetEmail = NotificationDto.builder()
+                .recipient(user.getEmail())
+                .subject("Password Updated Successfully")
+                .templateName("password-update-confirmation")
+                .templateVariables(Map.of(
+                        "name", user.getName()
+                ))
+                .build();
+
+        notificationService.sendEmail(passwordResetEmail, user);
+
+        return Response.builder()
+                .statusCode(200)
+                .message("Password updated successfully")
+                .build();
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
