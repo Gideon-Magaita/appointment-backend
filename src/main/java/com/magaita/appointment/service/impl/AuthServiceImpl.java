@@ -1,16 +1,10 @@
 package com.magaita.appointment.service.impl;
 
 import com.magaita.appointment.dto.*;
-import com.magaita.appointment.entity.Doctor;
-import com.magaita.appointment.entity.Patient;
-import com.magaita.appointment.entity.Role;
-import com.magaita.appointment.entity.User;
+import com.magaita.appointment.entity.*;
 import com.magaita.appointment.exceptions.BadRequestException;
 import com.magaita.appointment.exceptions.NotFoundException;
-import com.magaita.appointment.repository.DoctorRepo;
-import com.magaita.appointment.repository.PatientRepo;
-import com.magaita.appointment.repository.RoleRepository;
-import com.magaita.appointment.repository.UserRepository;
+import com.magaita.appointment.repository.*;
 import com.magaita.appointment.res.Response;
 import com.magaita.appointment.security.JwtService;
 import com.magaita.appointment.service.AuthService;
@@ -40,6 +34,9 @@ public class AuthServiceImpl implements AuthService {
 
     private final PatientRepo patientRepo;
     private final DoctorRepo doctorRepo;
+
+    private final CodeGenerator codeGenerator;
+    private final PasswordResetRepo passwordResetRepo;
 
     @Value("${password.reset.link}")
     private String resetLink;
@@ -127,17 +124,71 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Response<LoginResponse> login(LoginRequest loginRequest) {
+        String email = loginRequest.getEmail();
+        String password = loginRequest.getPassword();
 
-        return null;
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()->new NotFoundException("User not found!"));
+        if(!passwordEncoder.matches(password,user.getPassword())){
+            throw  new BadRequestException("Password do not match!");
+        }
+
+        String token = jwtService.generateToken(user.getEmail());
+
+        LoginResponse loginResponse = LoginResponse.builder()
+                .roles(user.getRoles().stream().map(Role::getName).toList())
+                .token(token)
+                .build();
+
+        return Response.<LoginResponse>builder()
+                .statusCode(200)
+                .message("Login success")
+                .data(loginResponse)
+                .build();
     }
 
     @Override
     public Response<?> forgetPassword(String email) {
-        return null;
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()->new NotFoundException("User not found!"));
+        passwordResetRepo.deleteByUserId(user.getId());
+
+        String code = codeGenerator.generateUniqueCode();
+
+        PasswordResetCode passwordResetCode = PasswordResetCode.builder()
+                .user(user)
+                .code(code)
+                .expiryDate(calculateExpiryDate())
+                .used(false)
+                .build();
+
+        passwordResetRepo.save(passwordResetCode);
+
+        //Send email reset link
+
+        NotificationDto passwordResetEmail = NotificationDto.builder()
+                .recipient(user.getEmail())
+                .subject("Password reset code")
+                .templateName("password-reset")
+                .templateVariables(Map.of(
+                        "name",user.getName(),
+                        "resetLink",resetLink + code
+                ))
+                .build();
+
+        notificationService.sendEmail(passwordResetEmail,user);
+
+        return Response.builder()
+                .statusCode(200)
+                .message("Password reset code sent to your email")
+                .build();
     }
+
 
     @Override
     public Response<?> updatePasswordViaResetCode(ResetPasswordRequest resetPasswordRequest) {
+
         return null;
     }
 
@@ -155,7 +206,7 @@ public class AuthServiceImpl implements AuthService {
 
 
 
-    //Registration useful functions
+    //Registration useful functions(profile creation for patient,doctor and sending message)
     private void createPatientProfile(User user) {
         Patient patient = Patient.builder()
                 .user(user)
@@ -194,6 +245,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private LocalDateTime calculateExpiryDate() {
+
         return LocalDateTime.now().plusHours(5);
     }
 }
