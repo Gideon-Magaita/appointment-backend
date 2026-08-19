@@ -1,7 +1,7 @@
 package com.magaita.appointment.enums;
 
 public enum AppointmentStatus {
-    SCHEDULE,
+    SCHEDULED,
     COMPLETED,
     CANCELLED,
     NO_SHOW

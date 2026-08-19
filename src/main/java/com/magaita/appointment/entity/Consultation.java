@@ -24,18 +24,16 @@ public class Consultation {
 
     private LocalDateTime consultationDate;
 
-    @Column(name = "subjective_notes")
-    @Lob
+    @Column(name = "subjective_notes", columnDefinition = "TEXT")
     private String subjectiveNotes;
 
-    @Column(name = "objective_findings")
-    @Lob
+    @Column(name = "objective_findings", columnDefinition = "TEXT")
     private String objectiveFindings;
 
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String assessment;
 
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String plan;
 
     @OneToOne

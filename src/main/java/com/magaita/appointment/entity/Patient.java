@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(name="notifications")
+@Table(name="patients")
 @Data
 @Builder
 @AllArgsConstructor

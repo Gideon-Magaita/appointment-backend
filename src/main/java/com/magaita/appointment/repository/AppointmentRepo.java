@@ -18,7 +18,7 @@ public interface AppointmentRepo extends JpaRepository<Appointment,Long> {
     Optional<Appointment>findByPatient_User_IdOrderByIdDesc(Long userId);
 
     @Query("SELECT a FROM Appointment a " +
-            "WHERE a.doctor.id = :doctor " +
+            "WHERE a.doctor.id = :doctorId " +
             "AND a.status = 'SCHEDULED' " + //Only check for scheduled/conflicting appointments
             "AND ("+
             //Case 1: Existing appointment starts during the new slot

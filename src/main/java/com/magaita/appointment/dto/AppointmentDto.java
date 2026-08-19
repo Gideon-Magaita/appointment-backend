@@ -25,7 +25,7 @@ public class AppointmentDto {
     private Long id;
 
     @NotNull(message = "Doctor Id is required for booking an appointment")
-    private Long DoctorId;
+    private Long doctorId;
 
     @NotNull(message = "Start time is required for the appointment")
     @Future(message = "Appointment must be scheduled for future time and date")

@@ -3,6 +3,7 @@ package com.magaita.appointment.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.magaita.appointment.entity.User;
+import com.magaita.appointment.enums.Specialization;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +24,7 @@ public class DoctorDto {
 
     private String lastName;
 
-    private String specialization;
+    private Specialization specialization;
 
     private String licenseNumber;
 
